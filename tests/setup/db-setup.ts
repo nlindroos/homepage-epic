@@ -9,18 +9,18 @@ const databasePath = path.join(process.cwd(), databaseFile)
 process.env.DATABASE_URL = `file:${databasePath}`
 
 beforeAll(async () => {
-	await fsExtra.copyFile(BASE_DATABASE_PATH, databasePath)
+  await fsExtra.copyFile(BASE_DATABASE_PATH, databasePath)
 })
 
 // we *must* use dynamic imports here so the process.env.DATABASE_URL is set
 // before prisma is imported and initialized
 afterEach(async () => {
-	const { prisma } = await import('#app/utils/db.server.ts')
-	await cleanupDb(prisma)
+  const { prisma } = await import('#app/utils/db.server.ts')
+  await cleanupDb(prisma)
 })
 
 afterAll(async () => {
-	const { prisma } = await import('#app/utils/db.server.ts')
-	await prisma.$disconnect()
-	await fsExtra.remove(databasePath)
+  const { prisma } = await import('#app/utils/db.server.ts')
+  await prisma.$disconnect()
+  await fsExtra.remove(databasePath)
 })
