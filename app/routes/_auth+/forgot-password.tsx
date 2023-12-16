@@ -4,8 +4,8 @@ import * as E from '@react-email/components'
 import {
   json,
   redirect,
-  type DataFunctionArgs,
   type MetaFunction,
+  type ActionFunctionArgs,
 } from '@remix-run/node'
 import { Link, useFetcher } from '@remix-run/react'
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
@@ -25,7 +25,7 @@ const ForgotPasswordSchema = z.object({
   usernameOrEmail: z.union([EmailSchema, UsernameSchema]),
 })
 
-export async function action({ request }: DataFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
   await validateCSRF(formData, request.headers)
   checkHoneypot(formData)

@@ -14,8 +14,8 @@ import {
   json,
   unstable_parseMultipartFormData as parseMultipartFormData,
   redirect,
-  type DataFunctionArgs,
   type SerializeFrom,
+  type ActionFunctionArgs,
 } from '@remix-run/node'
 import { Form, useActionData } from '@remix-run/react'
 import { useRef, useState } from 'react'
@@ -73,7 +73,7 @@ const NoteEditorSchema = z.object({
   images: z.array(ImageFieldsetSchema).max(5).optional(),
 })
 
-export async function action({ request }: DataFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
 
   const formData = await parseMultipartFormData(

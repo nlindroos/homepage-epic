@@ -4,8 +4,9 @@ import { invariant } from '@epic-web/invariant'
 import {
   json,
   redirect,
-  type DataFunctionArgs,
   type MetaFunction,
+  type LoaderFunctionArgs,
+  type ActionFunctionArgs,
 } from '@remix-run/node'
 import {
   Form,
@@ -77,7 +78,7 @@ async function requireData({
   }
 }
 
-export async function loader({ request, params }: DataFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { email } = await requireData({ request, params })
   const authSession = await authSessionStorage.getSession(
     request.headers.get('cookie'),
@@ -102,7 +103,7 @@ export async function loader({ request, params }: DataFunctionArgs) {
   })
 }
 
-export async function action({ request, params }: DataFunctionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { email, providerId, providerName } = await requireData({
     request,
     params,
