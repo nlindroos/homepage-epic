@@ -4,8 +4,9 @@ import { invariant } from '@epic-web/invariant'
 import {
   json,
   redirect,
-  type DataFunctionArgs,
   type MetaFunction,
+  type LoaderFunctionArgs,
+  type ActionFunctionArgs,
 } from '@remix-run/node'
 import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
@@ -59,12 +60,12 @@ async function requireResetPasswordUsername(request: Request) {
   return resetPasswordUsername
 }
 
-export async function loader({ request }: DataFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const resetPasswordUsername = await requireResetPasswordUsername(request)
   return json({ resetPasswordUsername })
 }
 
-export async function action({ request }: DataFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const resetPasswordUsername = await requireResetPasswordUsername(request)
   const formData = await request.formData()
   const submission = parse(formData, {

@@ -1,4 +1,4 @@
-[![Deployment](https://github.com/nlindroos/homepage-epic/actions/workflows/deploy.yml/badge.svg)](https://github.com/nlindroos/homepage-epic/actions)
+[![Deployment status](https://github.com/nlindroos/homepage-epic/actions/workflows/deploy.yml/badge.svg)](https://github.com/nlindroos/homepage-epic/actions)
 
 <details>
 <summary>Under construction</summary>

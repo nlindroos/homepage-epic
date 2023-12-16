@@ -4,8 +4,9 @@ import { invariant } from '@epic-web/invariant'
 import {
   json,
   redirect,
-  type DataFunctionArgs,
   type MetaFunction,
+  type LoaderFunctionArgs,
+  type ActionFunctionArgs,
 } from '@remix-run/node'
 import { Form, Link, useActionData, useSearchParams } from '@remix-run/react'
 import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
@@ -188,12 +189,12 @@ const LoginFormSchema = z.object({
   remember: z.boolean().optional(),
 })
 
-export async function loader({ request }: DataFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   await requireAnonymous(request)
   return json({})
 }
 
-export async function action({ request }: DataFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   await requireAnonymous(request)
   const formData = await request.formData()
   await validateCSRF(formData, request.headers)
