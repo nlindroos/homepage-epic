@@ -4,8 +4,8 @@ import { requireUserId } from '#app/utils/auth.server.ts'
 import { NoteEditor, action } from './__note-editor.tsx'
 
 export async function loader({ request }: DataFunctionArgs) {
-	await requireUserId(request)
-	return json({})
+  await requireUserId(request)
+  return json({})
 }
 
 export { action }
