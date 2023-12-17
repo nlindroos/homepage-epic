@@ -1,8 +1,9 @@
 export default {
   plugins: {
-    '@pandacss/dev/postcss': {},
+    'postcss-import': {},
     'tailwindcss/nesting': {},
     tailwindcss: {},
+    '@pandacss/dev/postcss': {},
     autoprefixer: {},
   },
 }
