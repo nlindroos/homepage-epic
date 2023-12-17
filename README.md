@@ -15,7 +15,9 @@ This repository hosts the source code for
 This app is built with [Remix](https://remix.run/) with
 [the Epic Stack](https://www.epicweb.dev/epic-stack). It is mostly overkill for
 it's simple nature. The main reasoning behind the tool choices is the ability to
-choose the latest & greatest.
+choose the latest & greatest. A more reasonable and effective approach for this
+kind of an app would be to build a static site, the however given the simplicity
+of this app, server-side rendering if plenty efficient.
 
 The meme below is an apt description of the setup of this app.
 
