@@ -109,6 +109,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "8.3.1",
+    "@pandacss/dev": "0.22.1",
     "@playwright/test": "1.40.1",
     "@remix-run/dev": "2.4.0",
     "@remix-run/eslint-config": "2.4.0",
