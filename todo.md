@@ -3,3 +3,6 @@
 - Knip https://knip.dev/
 - lint-staged eslint + prettier
 - https
+- package.json sort
+- import eslint auto fix
+- migrate tailwind to panda

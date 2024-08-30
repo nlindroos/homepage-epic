@@ -15,20 +15,24 @@ import {
   Links,
   LiveReload,
   Meta,
+  // NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
   useFetcher,
   useFetchers,
   useLoaderData,
+  useLocation,
   useMatches,
   useSubmit,
 } from '@remix-run/react'
 import { withSentry } from '@sentry/remix'
+import clsx from 'clsx'
 import { useRef } from 'react'
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
+import { css } from '#styled-system/css'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
 import { ErrorList } from './components/forms.tsx'
 import { EpicProgress } from './components/progress-bar.tsx'
@@ -43,6 +47,7 @@ import {
   DropdownMenuTrigger,
 } from './components/ui/dropdown-menu.tsx'
 import { Icon, href as iconsHref } from './components/ui/icon.tsx'
+import styles from './index.css'
 import fontStyleSheetUrl from './styles/font.css'
 import tailwindStyleSheetUrl from './styles/tailwind.css'
 import { getUserId, logout } from './utils/auth.server.ts'
@@ -66,6 +71,7 @@ export const links: LinksFunction = () => {
     // Preload CSS as a resource to avoid render blocking
     { rel: 'preload', href: fontStyleSheetUrl, as: 'style' },
     { rel: 'preload', href: tailwindStyleSheetUrl, as: 'style' },
+    { rel: 'preload', href: styles, as: 'style' },
     cssBundleHref ? { rel: 'preload', href: cssBundleHref, as: 'style' } : null,
     { rel: 'mask-icon', href: '/favicons/mask-icon.svg' },
     {
@@ -83,6 +89,7 @@ export const links: LinksFunction = () => {
     { rel: 'icon', type: 'image/svg+xml', href: '/favicons/favicon.svg' },
     { rel: 'stylesheet', href: fontStyleSheetUrl },
     { rel: 'stylesheet', href: tailwindStyleSheetUrl },
+    { rel: 'stylesheet', href: styles },
     cssBundleHref ? { rel: 'stylesheet', href: cssBundleHref } : null,
   ].filter(Boolean)
 }
@@ -94,7 +101,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ]
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const timings = makeTimings('root loader')
   const userId = await time(() => getUserId(request), {
     timings,
@@ -161,6 +168,32 @@ export async function loader({ request }: LoaderFunctionArgs) {
   )
 }
 
+const NavLink = ({
+  to,
+  ...rest
+}: Omit<Parameters<typeof Link>['0'], 'to'> & { to: string }) => {
+  const location = useLocation()
+  const isSelected =
+    to === location.pathname || location.pathname.startsWith(`${to}/`)
+
+  return (
+    <li className="px-5 py-2">
+      <Link
+        prefetch="intent"
+        className={clsx(
+          'underlined hover:text-team-current focus:text-team-current block whitespace-nowrap text-lg font-medium focus:outline-none',
+          {
+            'active text-team-current': isSelected,
+            'text-secondary': !isSelected,
+          },
+        )}
+        to={to}
+        {...rest}
+      />
+    </li>
+  )
+}
+
 export const headers: HeadersFunction = ({ loaderHeaders }) => {
   const headers = {
     'Server-Timing': loaderHeaders.get('Server-Timing') ?? '',
@@ -172,7 +205,7 @@ const ThemeFormSchema = z.object({
   theme: z.enum(['system', 'light', 'dark']),
 })
 
-export async function action({ request }: ActionFunctionArgs) {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData()
   const submission = parse(formData, {
     schema: ThemeFormSchema,
@@ -227,7 +260,17 @@ function Document({
   )
 }
 
-function App() {
+const LINKS = [
+  { name: 'Home', to: '/' },
+  { name: 'Courses', to: '/courses' },
+  { name: 'Discord', to: '/discord' },
+  { name: 'Chats', to: '/chats/04' },
+  { name: 'Calls', to: '/calls/04' },
+  { name: 'Workshops', to: '/workshops' },
+  { name: 'About', to: '/about' },
+]
+
+const App = () => {
   const data = useLoaderData<typeof loader>()
   const nonce = useNonce()
   const user = useOptionalUser()
@@ -239,28 +282,48 @@ function App() {
   return (
     <Document nonce={nonce} theme={theme} env={data.ENV}>
       <div className="flex h-screen flex-col justify-between">
-        <header className="container py-6">
-          <nav>
-            <div className="flex flex-wrap items-center justify-between gap-4 sm:flex-nowrap md:gap-8">
-              <Link to="/">
-                <div className="font-light">epic</div>
-                <div className="font-bold">notes</div>
-              </Link>
-              <div className="ml-auto hidden max-w-sm flex-1 sm:block">
-                {searchBar}
+        <header className="container p-6">
+          <div className="px-5vw py-9 lg:py-12">
+            <nav className="max-w-8xl mx-10 flex items-center justify-between text-primary">
+              <div className="flex justify-center gap-4 align-middle">
+                <Link
+                  prefetch="intent"
+                  to="/"
+                  className="underlined block whitespace-nowrap text-2xl font-medium text-primary transition focus:outline-none"
+                >
+                  <h1>NL</h1>
+                </Link>
               </div>
-              <div className="flex items-center gap-10">
-                {user ? (
-                  <UserDropdown />
-                ) : (
-                  <Button asChild variant="default" size="sm">
-                    <Link to="/login">Log In</Link>
-                  </Button>
-                )}
+              {/* <div className={css({ fontSize: '2xl', fontWeight: 'bold' })}>
+                Hello 🐼!
+              </div> */}
+              <ul className="hidden flex-row gap-4 lg:flex">
+                {LINKS.map(link => (
+                  <NavLink key={link.to} to={link.to}>
+                    {link.name}
+                  </NavLink>
+                ))}
+              </ul>
+
+              <div className="flex items-center justify-center">
+                <div className="block lg:hidden">
+                  {/* <MobileMenu /> */}
+                  <p>mobile menu</p>
+                </div>
+                <div className="noscript-hidden hidden lg:block">
+                  {/* <DarkModeToggle /> */}
+                  <p>darkmodetoggle</p>
+                </div>
+                {/* 
+          <ProfileButton
+            magicLinkVerified={requestInfo.session.magicLinkVerified}
+            imageUrl={avatar.src}
+            imageAlt={avatar.alt}
+            team={team}
+          /> */}
               </div>
-              <div className="block w-full sm:hidden">{searchBar}</div>
-            </div>
-          </nav>
+            </nav>
+          </div>
         </header>
 
         <div className="flex-1">
@@ -281,7 +344,7 @@ function App() {
   )
 }
 
-function AppWithProviders() {
+const AppWithProviders = () => {
   const data = useLoaderData<typeof loader>()
   return (
     <AuthenticityTokenProvider token={data.csrfToken}>
@@ -294,72 +357,11 @@ function AppWithProviders() {
 
 export default withSentry(AppWithProviders)
 
-function UserDropdown() {
-  const user = useUser()
-  const submit = useSubmit()
-  const formRef = useRef<HTMLFormElement>(null)
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button asChild variant="secondary">
-          <Link
-            to={`/users/${user.username}`}
-            // this is for progressive enhancement
-            onClick={e => e.preventDefault()}
-            className="flex items-center gap-2"
-          >
-            <img
-              className="h-8 w-8 rounded-full object-cover"
-              alt={user.name ?? user.username}
-              src={getUserImgSrc(user.image?.id)}
-            />
-            <span className="text-body-sm font-bold">
-              {user.name ?? user.username}
-            </span>
-          </Link>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuPortal>
-        <DropdownMenuContent sideOffset={8} align="start">
-          <DropdownMenuItem asChild>
-            <Link prefetch="intent" to={`/users/${user.username}`}>
-              <Icon className="text-body-md" name="avatar">
-                Profile
-              </Icon>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link prefetch="intent" to={`/users/${user.username}/notes`}>
-              <Icon className="text-body-md" name="pencil-2">
-                Notes
-              </Icon>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            asChild
-            // this prevents the menu from closing before the form submission is completed
-            onSelect={event => {
-              event.preventDefault()
-              submit(formRef.current)
-            }}
-          >
-            <Form action="/logout" method="POST" ref={formRef}>
-              <Icon className="text-body-md" name="exit">
-                <button type="submit">Logout</button>
-              </Icon>
-            </Form>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenuPortal>
-    </DropdownMenu>
-  )
-}
-
 /**
  * @returns the user's theme preference, or the client hint theme if the user
  * has not set a preference.
  */
-export function useTheme() {
+export const useTheme = () => {
   const hints = useHints()
   const requestInfo = useRequestInfo()
   const optimisticMode = useOptimisticThemeMode()
@@ -373,7 +375,7 @@ export function useTheme() {
  * If the user's changing their theme mode preference, this will return the
  * value it's being changed to.
  */
-export function useOptimisticThemeMode() {
+export const useOptimisticThemeMode = () => {
   const fetchers = useFetchers()
   const themeFetcher = fetchers.find(f => f.formAction === '/')
 
@@ -385,7 +387,7 @@ export function useOptimisticThemeMode() {
   }
 }
 
-function ThemeSwitch({ userPreference }: { userPreference?: Theme | null }) {
+const ThemeSwitch = ({ userPreference }: { userPreference?: Theme | null }) => {
   const fetcher = useFetcher<typeof action>()
 
   const [form] = useForm({
@@ -431,7 +433,7 @@ function ThemeSwitch({ userPreference }: { userPreference?: Theme | null }) {
   )
 }
 
-export function ErrorBoundary() {
+export const ErrorBoundary = () => {
   // the nonce doesn't rely on the loader so we can access that
   const nonce = useNonce()
 
