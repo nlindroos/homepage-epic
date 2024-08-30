@@ -5,3 +5,4 @@
 - https
 - package.json sort
 - import eslint auto fix
+- migrate tailwind to panda
