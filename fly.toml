@@ -1,8 +1,9 @@
-app = "homepage-epic-54d3"
+app = "homepage-epic-d288"
 primary_region = "sjc"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = [ ]
+swap_size_mb = 512
 
 [experimental]
 allowed_public_ports = [ ]
@@ -12,8 +13,9 @@ auto_rollback = true
 source = "data"
 destination = "/data"
 
-[deploy]
-release_command = "node ./other/sentry-create-release"
+[build]
+dockerfile = "/other/Dockerfile"
+ignorefile = "/other/Dockerfile.dockerignore"
 
 [[services]]
 internal_port = 8080
