@@ -5,8 +5,8 @@ import { NoteEditor } from './__note-editor.tsx'
 export { action } from './__note-editor.server.tsx'
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	await requireUserId(request)
-	return json({})
+  await requireUserId(request)
+  return json({})
 }
 
 export default NoteEditor
