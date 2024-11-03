@@ -1,5 +1,6 @@
 {
-  "name": "homepage-nlindroos",
+  "name": "homepage-nl",
+  "author": "Niklas Lindroos (http://niklaslindroos.fi/)",
   "private": true,
   "sideEffects": false,
   "type": "module",
